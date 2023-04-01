@@ -1,7 +1,8 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-
+using Services;
+using Services.Dtos;
+using Services.ServicesAbstractions;
 
 namespace ContactsApi.Controllers
 {
@@ -9,27 +10,43 @@ namespace ContactsApi.Controllers
     [Route("[controller]")]
     public class ContactsController : ControllerBase
     {
+        private readonly IContactService _contactService;
+
+        public ContactsController(IContactService contactService)
+        {
+            _contactService = contactService;
+        }
+
         [HttpPost]
-        public void reate([FromBody] Contact contact)
+        public string Create([FromBody] Contact contact) 
         {
+            var resultado = _contactService.Create(contact);
 
+            return resultado;
         }
 
-        [HttpGet]
-        public List<Contact> Get()
+        [HttpGet("{senha}")]
+        public List<ContactResponseDto> Get([FromRoute] string senha)
         {
-            return new List<Contact>();
-        } 
-        [HttpPut("{id}")]
-        public void Update([FromBody] Contact updateContact)
-        {
+            var resultado = _contactService.GetAll(senha);
 
-        }     
-
-        [HttpDelete("{id}")]
-        public void Delete([FromRoute] int id)
-        {
-            
+            return resultado;
         }
-    }      
+
+        [HttpPut]
+        public string Update([FromBody] Contact updatedContact) 
+        {
+            var resultado = _contactService.Update(updatedContact);
+
+            return resultado;
+        }
+
+        [HttpDelete]
+        public string Delete([FromBody] Contact contact)
+        {
+            var resultado = _contactService.Delete(contact);
+
+            return resultado;
+        }
+    }
 }
